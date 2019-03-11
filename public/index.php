@@ -6,9 +6,16 @@
  * and open the template in the editor.
  */
 
-include '../betterThink/entry.php';
+$iframedir = '../Think/Think.php';
+if ( file_exists($iframedir) ){
+    require $iframedir;
+    define('APP_PATH','azb');   //项目路径
+    
+    Think::run();
+    
+}else
+{
+    
+}
 
-define('APP_NAME', 'home');
-
-Think::run();
 
