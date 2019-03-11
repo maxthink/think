@@ -12,5 +12,25 @@
  * @author mljm
  */
 class Model {
-    //put your code here
+    
+    
+    public function query()
+    {
+        
+    }
+    
+    public function select()
+    {
+        
+    }
+    
+    public function update()
+    {
+        
+    }
+    
+    public function find()
+    {
+        
+    }
 }

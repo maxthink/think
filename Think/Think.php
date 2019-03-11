@@ -24,7 +24,8 @@ class Think{
     {
         //路径常量
         define('ROOT', getcwd().'/../' );
-        
+        define('FRAME_PATH',__DIR__.'/');
+        echo FRAME_PATH;
         //应用目录地址
         if(!defined('APP_PATH')){
             //define( 'APP_PATH',ROOT.'/'.APP_PATH );
@@ -36,11 +37,17 @@ class Think{
         define('CONTROLLER_PATH',APP_PATH.'/Controller/');
         define('MODEL_PATH',APP_PATH.'/Model/');
         
+        
+        
         //初始化项目目录内容
         if(!is_dir(APP_PATH))
         {
             self::_initApp();
         }
+        require FRAME_PATH.'common/function.php';
+        require FRAME_PATH.'core/Controller.php';
+        require FRAME_PATH.'core/Model.php';
+        require FRAME_PATH.'core/View.php';
         
         spl_autoload_register( 'Think::_autoload' );
         register_shutdown_function( 'Think::_shutdown' );
@@ -94,6 +101,11 @@ class Think{
         {
             include MODEL_PATH.$classname.'.php';
             return;
+        }
+        
+        if(file_exists(FRAME_PATH.'lib/'.$classname.'.php'))
+        {
+            include FRAME_PATH.'lib/'.$classname.'.php';
         }
         
         //self::_error('');

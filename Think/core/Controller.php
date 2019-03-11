@@ -13,4 +13,22 @@
  */
 class Controller {
     //put your code here
+    protected $viewData;
+    
+    public function __construct() 
+    {
+        
+    }
+    
+    public function assign($key,$val)
+    {
+        $this->viewData[] = [$key,$val];
+    }
+    
+    public function display()
+    {
+        
+    }
+    
+
 }

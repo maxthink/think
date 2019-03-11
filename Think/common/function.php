@@ -6,3 +6,33 @@
  * and open the template in the editor.
  */
 
+/**
+ * controller
+ */
+function A($control=''){
+    
+}
+
+/**
+ * 
+ */
+function B()
+{
+    
+}
+
+/**
+ * 
+ */
+function C()
+{
+    
+}
+
+/**
+ * 
+ */
+function M()
+{
+    
+}
