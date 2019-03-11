@@ -33,11 +33,19 @@ class Think{
         
         //配置文件
         define('CONFIG_PATH',APP_PATH.'/common/config.php');
+        define('CONTROLLER_PATH',APP_PATH.'/Controller/');
+        define('MODEL_PATH',APP_PATH.'/Model/');
+        
+        //初始化项目目录内容
+        if(!is_dir(APP_PATH))
+        {
+            self::_initApp();
+        }
         
         spl_autoload_register( 'Think::_autoload' );
         register_shutdown_function( 'Think::_shutdown' );
         set_error_handler( 'Think::_error' );
-        set_exception_handler( 'Think::_excetion' );
+        set_exception_handler( 'Think::_exception' );
     }
     
     /**
@@ -45,31 +53,84 @@ class Think{
      */
     private static function dispath()
     {
+        $config = include CONFIG_PATH;
         
+        $uri = $_SERVER['REQUEST_URI'];
+        
+        if($uri=='/' || $uri=='/index.php'){
+            $c = 'indexController';
+            $a = 'index';
+        }else
+        {
+            $paths = explode($uri, '/');
+            if(strpos('/index.php',$uri)===0)
+            {
+                $c = $paths[1].'Controller';
+                $a = $paths[2];
+            }else
+            {
+                $c = $paths[0].'Controller';
+                $a = $paths[1];
+            }
+        }
+        
+        $do = new $c();
+        $do->$a();
     }
     
     
     /**
      * 注册自动加载
      */
-    public static function _autoload()
+    public static function _autoload($classname)
     {
+        if(  false !== strpos($classname,'Controller') )
+        {
+            include CONTROLLER_PATH.$classname.'.php';
+            return;
+        }
+
+        if(  false !== strpos($classname,'Model') )
+        {
+            include MODEL_PATH.$classname.'.php';
+            return;
+        }
         
+        //self::_error('');
     }
     
     public static function _shutdown()
     {
-        
+        echo '<br>shut down';
+        //var_dump($msg);
     }
     
-    public static function _error()
+    public static function _error($msg)
     {
-        
+        echo '<br>error:';
+        var_dump($msg);
+        echo '<br>';
     }
     
-    public static function _excetion()
+    public static function _exception($exception)
     {
+        echo 'exception<pre>';
+        var_dump($exception);
+        //echo $exception->file;
+        //echo $exception->message;
         
+        echo '</pre>';
     }
     
+    /**
+     * 初始化项目路径,index 控制器
+     */
+    private static function _initApp()
+    {
+        mkdir(APP_PATH);
+        mkdir( CONTROLLER_PATH );
+        file_put_contents( APP_PATH.'/Controller/indexController.php',"<?php\n/**\n* indexController \n */\nclass indexController{\n\t public function index(){\n\t\t echo 'Think iframe ! ';\n\t }\n}");
+        mkdir( MODEL_PATH );
+    }
 }
+ 

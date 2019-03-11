@@ -9,13 +9,13 @@
 $iframedir = '../Think/Think.php';
 if ( file_exists($iframedir) ){
     require $iframedir;
-    define('APP_PATH','azb');   //项目路径
+    define('APP_PATH','../azb');   //项目路径
     
     Think::run();
     
 }else
 {
-    
+    echo 'where is begin ? ';
 }
 
 
