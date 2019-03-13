@@ -25,9 +25,12 @@ class Controller {
         $this->viewData[] = [$key,$val];
     }
     
-    public function display()
+    public function display($template='')
     {
-        
+        if($template=='')
+        {
+            $template= APP_PATH.C('template/use').__CLASS__.'/index.'.C('template/file_suffix');
+        }
     }
     
 

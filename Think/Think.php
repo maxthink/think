@@ -10,7 +10,8 @@
 
 class Think{
     
-    
+    public static $config;
+
     public static function run()
     {
         self::init();
@@ -23,27 +24,36 @@ class Think{
     private static function init()
     {
         //路径常量
-        define('ROOT', getcwd().'/../' );
+        define('ROOT', getcwd().'/../' );   //
+        
+        //框架根目录
         define('FRAME_PATH',__DIR__.'/');
         echo FRAME_PATH;
+        
+        
         //应用目录地址
         if(!defined('APP_PATH')){
-            //define( 'APP_PATH',ROOT.'/'.APP_PATH );
-            define('APP_PATH',ROOT.'Application');
+            if(defined('APP_NAME')){
+                define('APP_PATH',ROOT.APP_NAME);
+            }
+            else
+            {
+                define('APP_PATH',ROOT.'Application');
+            }            
         }
         
-        //配置文件
-        define('CONFIG_PATH',APP_PATH.'/common/config.php');
+        //应用配置文件
+        define('CONFIG_PATH',APP_PATH.'/Common/config.php');
         define('CONTROLLER_PATH',APP_PATH.'/Controller/');
         define('MODEL_PATH',APP_PATH.'/Model/');
-        
-        
-        
+                
         //初始化项目目录内容
         if(!is_dir(APP_PATH))
         {
             self::_initApp();
         }
+        
+        //引入框架基础类
         require FRAME_PATH.'common/function.php';
         require FRAME_PATH.'core/Controller.php';
         require FRAME_PATH.'core/Model.php';
@@ -60,7 +70,7 @@ class Think{
      */
     private static function dispath()
     {
-        $config = include CONFIG_PATH;
+        self::$config = include CONFIG_PATH;
         
         $uri = $_SERVER['REQUEST_URI'];
         
@@ -140,6 +150,7 @@ class Think{
     private static function _initApp()
     {
         mkdir(APP_PATH);
+        mkdir( CONFIG_PATH );
         mkdir( CONTROLLER_PATH );
         file_put_contents( APP_PATH.'/Controller/indexController.php',"<?php\n/**\n* indexController \n */\nclass indexController{\n\t public function index(){\n\t\t echo 'Think iframe ! ';\n\t }\n}");
         mkdir( MODEL_PATH );

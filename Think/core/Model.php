@@ -12,11 +12,14 @@
  * @author mljm
  */
 class Model {
+    protected $db;
+    public function __construct() {
+        $this->db = Db::getInstance();
+    }
     
-    
-    public function query()
+    public function query($sql = '')
     {
-        
+        mysqli_query($this->db, $sql);
     }
     
     public function select()
