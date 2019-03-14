@@ -23,30 +23,35 @@ class Think{
      */
     private static function init()
     {
-        //路径常量
+        //根路径常量
         define('ROOT', getcwd().'/../' );   //
         
         //框架根目录
         define('FRAME_PATH',__DIR__.'/');
         echo FRAME_PATH;
         
+        //项目(应用)名
+        if(!defined('APP_NAME')){
+            define('APP_NAME','app');
+        }        
         
         //应用目录地址
         if(!defined('APP_PATH')){
-            if(defined('APP_NAME')){
-                define('APP_PATH',ROOT.APP_NAME);
-            }
-            else
-            {
-                define('APP_PATH',ROOT.'Application');
-            }            
+            define('APP_PATH',ROOT.APP_NAME);           
+        }
+        
+        //应用模块( 这里可以处理成 根据uri自动匹配模块, ..... )
+        if(!defined('APP_MODULE'))
+        {
+            define('APP_MODULE', 'home');   //默认创建 home 模块(前端显示模块)
         }
         
         //应用配置文件
-        define('CONFIG_PATH',APP_PATH.'/Common/config.php');
-        define('CONTROLLER_PATH',APP_PATH.'/Controller/');
-        define('MODEL_PATH',APP_PATH.'/Model/');
-                
+        define('CONFIG_PATH',APP_PATH.'/'.APP_MODULE.'/common/');
+        define('CONTROLLER_PATH',APP_PATH.'/'.APP_MODULE.'/controller/');
+        define('MODEL_PATH',APP_PATH.'/'.APP_MODULE.'/model/');
+        define('VIEW_PATH',APP_PATH.'/'.APP_MODULE.'/view/');
+
         //初始化项目目录内容
         if(!is_dir(APP_PATH))
         {
@@ -55,9 +60,9 @@ class Think{
         
         //引入框架基础类
         require FRAME_PATH.'common/function.php';
-        require FRAME_PATH.'core/Controller.php';
-        require FRAME_PATH.'core/Model.php';
-        require FRAME_PATH.'core/View.php';
+        require FRAME_PATH.'core/controller.php';
+        require FRAME_PATH.'core/model.php';
+        require FRAME_PATH.'core/view.php';
         
         spl_autoload_register( 'Think::_autoload' );
         register_shutdown_function( 'Think::_shutdown' );
@@ -71,26 +76,33 @@ class Think{
     private static function dispath()
     {
         self::$config = include CONFIG_PATH;
-        
+
         $uri = $_SERVER['REQUEST_URI'];
+        $c = 'index';   //默认控制器
+        $a = 'index';   //默认方法
         
-        if($uri=='/' || $uri=='/index.php'){
-            $c = 'indexController';
-            $a = 'index';
-        }else
+        if($uri=='/' || $uri=='/index.php')     // http://xxx.net/index.php http://xxx.net/  两种地址用默认的 index
         {
+            $c = 'index';
+            $a = 'index';
+        }
+        else
+        {
+            echo '------';
             $paths = explode($uri, '/');
-            if(strpos('/index.php',$uri)===0)
+            var_dump($paths);
+            exit(2);
+            if(strpos('/index.php',$uri)===0)   // http://xxx.net/index.php?/index/index   这种地址
             {
-                $c = $paths[1].'Controller';
+                $c = $paths[1];
                 $a = $paths[2];
-            }else
+            }else                               // http://xxx.net/index/index   这种地址
             {
-                $c = $paths[0].'Controller';
+                $c = $paths[0];
                 $a = $paths[1];
             }
         }
-        
+        //use APP_NAME\APP_MODULE;
         $do = new $c();
         $do->$a();
     }
@@ -101,13 +113,14 @@ class Think{
      */
     public static function _autoload($classname)
     {
-        if(  false !== strpos($classname,'Controller') )
+        echo '_autoload: '.$classname;
+        if(  false !== strpos($classname) )
         {
             include CONTROLLER_PATH.$classname.'.php';
             return;
         }
 
-        if(  false !== strpos($classname,'Model') )
+        if(  false !== strpos($classname) )
         {
             include MODEL_PATH.$classname.'.php';
             return;
@@ -149,11 +162,23 @@ class Think{
      */
     private static function _initApp()
     {
-        mkdir(APP_PATH);
-        mkdir( CONFIG_PATH );
-        mkdir( CONTROLLER_PATH );
-        file_put_contents( APP_PATH.'/Controller/indexController.php',"<?php\n/**\n* indexController \n */\nclass indexController{\n\t public function index(){\n\t\t echo 'Think iframe ! ';\n\t }\n}");
-        mkdir( MODEL_PATH );
+        mkdir( APP_PATH );                  //应用 目录
+        mkdir( APP_PATH.'/'.APP_MODULE );   //应用->模块 目录
+        mkdir( CONFIG_PATH );               //应用->模块->配置文件,公共方法 目录
+        mkdir( CONTROLLER_PATH );           //应用->模块->控制器 目录
+        mkdir( MODEL_PATH );                //应用->模块->模型 目录
+        mkdir( VIEW_PATH );                 //应用->模块->视图 目录
+        
+        //初始化文件和
+        file_put_contents( CONTROLLER_PATH.'index.php',"<?php\nnamespace ".APP_NAME.'\\'.APP_MODULE.'\\controller;'."\n/**\n* Controller index \n*/\nclass indexController{\n\tpublic function index(){\n\t\techo 'Think iframe ! ';\n\t}\n}");
+        file_put_contents( MODEL_PATH.'index.php',"<?php\nnamespace ".APP_NAME.'\\'.APP_MODULE.'\\model;'."\n/**\n* model index\n*/\nclass index{\n\tpublic function index(){\n\t\techo 'Think iframe ! ';\n\t}\n}");
+        file_put_contents( VIEW_PATH.'index.php',"<?php\nnamespace ".APP_NAME.'\\'.APP_MODULE.'\\view;'."\n/**\n* view index \n */\nclass index{\n\tpublic function index(){\n\t\t echo 'Think iframe ! ';\n\t}\n}");
+
+        copy(FRAME_PATH.'init/common/config.php', CONFIG_PATH.'config.php');
+        //copy(FRAME_PATH.'init/controller/index.php', CONTROLLER_PATH.'index.php');  //没解决配置命名空间问题
+        //copy(FRAME_PATH.'init/model/index.php', MODEL_PATH.'index.php');
+        //copy(FRAME_PATH.'init/view/index.php', VIEW_PATH.'index.php');
+        
     }
 }
  
