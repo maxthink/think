@@ -1,10 +1,9 @@
-<?php
-namespace app\home\controller;
+
 /**
 * Controller index 
 */
-class indexController{
+class index{
 	public function index(){
-		echo 'Think iframe ! ';
+        echo '<h1>hello, I am Think iframe ! </h1>';
 	}
 }
