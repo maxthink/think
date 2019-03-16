@@ -1,5 +1,4 @@
 <?php
-
 /* 
  * 入口文件
  * 定义项目名称, 框架自动生成项目初始代码, 
@@ -8,6 +7,8 @@
  * @email maxthink@163.com
  * 
  */
+
+//use Think;
 
 $iframedir = __DIR__.'/../Think/Think.php';  //引入框架
 if ( file_exists($iframedir) ){

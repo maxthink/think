@@ -9,8 +9,11 @@
 /**
  * Description of mysqli
  *
- * @author mljm
+ * @author maxthink
  */
-class mysqli {
+
+namespace Think\lib;
+
+class Mysqli {
     //put your code here
 }

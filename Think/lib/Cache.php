@@ -1,5 +1,4 @@
 <?php
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -7,10 +6,13 @@
  */
 
 /**
- * Description of Memcache
+ * Description of Cache
  *
- * @author mljm
+ * @author maxthink
  */
-class Memcache {
+
+namespace Think\lib;
+
+class Cache {
     //put your code here
 }

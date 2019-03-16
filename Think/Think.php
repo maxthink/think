@@ -1,11 +1,11 @@
 <?php
-
 /* 
  * 框架入口文件
  * betterThink, 更好的思考 -> 让编程者更好思考, 专注于项目开发, 不纠结框架逻辑
  * ( 更好的思考 -> 自己造一边轮子, 就知道造轮子的原理了, 看到别的轮子就知道怎么用了 *_* )
  * github:  https://github.com/maxthink/betterThink.git
  */
+
 //namespace Think;
 
 class Think{
@@ -29,23 +29,23 @@ class Think{
         //框架根目录
         define('FRAME_PATH',__DIR__.'/');
         
-        //项目(应用)名
+        //项目名
         if(!defined('APP_NAME')){
             define('APP_NAME','app');
         }        
         
-        //应用目录地址
+        //项目目录地址
         if(!defined('APP_PATH')){
-            define('APP_PATH',ROOT.APP_NAME);           
+            define('APP_PATH',ROOT.APP_NAME.'/');           
         }
         
-        //应用模块( 这里可以处理成 根据uri自动匹配模块, ..... )
+        //项目模块( 这里可以处理成 根据uri自动匹配模块, ..... )
         if(!defined('APP_MODULE'))
         {
             define('APP_MODULE', 'home');   //默认创建 home 模块(前端显示模块)
         }
         
-        //应用配置文件
+        //项目配置文件
         define('CONFIG_PATH',APP_PATH.'/'.APP_MODULE.'/common/');
         define('CONTROLLER_PATH',APP_PATH.'/'.APP_MODULE.'/controller/');
         define('MODEL_PATH',APP_PATH.'/'.APP_MODULE.'/model/');
@@ -76,7 +76,7 @@ class Think{
      */
     private static function dispath()
     {
-        if(file_exists(CONFIG_PATH.'config1.php')){
+        if(file_exists(CONFIG_PATH.'config.php')){
             self::$config = include CONFIG_PATH.'config.php';
         }else
         {
@@ -119,31 +119,35 @@ class Think{
      */
     public static function _autoload($class)
     {
-        $className = substr($class,intval(strrpos($class, '\\')) );
+        $className = basename($class);
 
         if(  false !== strpos($class,'controller') )
         {
-            if(file_exists( CONTROLLER_PATH.$className.'.php' )){
+            if (file_exists( CONTROLLER_PATH.$className.'.php' )){
                 include CONTROLLER_PATH.$className.'.php';
-            }else
-            {
+            } else {
                 throw new Exception(" Controller codefile not found :".CONTROLLER_PATH.$className.'.php' );
             }
             return;
         }
 
-        if(  false !== strpos('model') )
+        if(  false !== strpos($class,'model') )
         {
-            include MODEL_PATH.$className.'.php';
+	    if (file_exists( MODEL_PATH.$className.'.php' )){
+                include MODEL_PATH.$className.'.php';
+            } else {
+                throw new Exception(" Model codefile not found :".CONTROLLER_PATH.$className.'.php' );
+            }
             return;
         }
         
         if(file_exists(FRAME_PATH.'lib/'.$className.'.php'))
         {
-            include FRAME_PATH.'lib/'.$classname.'.php';
+            include FRAME_PATH.'lib/'.$className.'.php';
+	    return;
         }
         
-        //self::_error('');
+        throw new Exception('自动加载没有检测到要加载的文件：'.$class);
     }
     
     public static function _shutdown()

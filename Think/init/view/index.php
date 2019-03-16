@@ -9,12 +9,11 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="black"> 
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="format-detection" content="telephone=no">
-
-        <link rel="stylesheet" href="//res.layui.com/layui/dist/css/layui.css?t=1551352891258"  media="all">
-        <link rel="stylesheet" href="//res.layui.com/static/css/global.css?t=1551352891258-6" media="all">
+        <link rel="stylesheet" href="/static/css/global.css?verion=1.0" media="all">
     </head>
     <body>
         <div>
+	    <h1>hello, I am Think iframe ! </h1>
             <span> Better Think !  *_* </span>
         </div>
     </body>     

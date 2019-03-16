@@ -7,10 +7,13 @@
  */
 
 /**
- * Description of Page
+ * Description of Memcache
  *
  * @author mljm
  */
-class Page {
+
+namespace Think\lib;
+
+class Memcache {
     //put your code here
 }
