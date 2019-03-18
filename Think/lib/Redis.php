@@ -1,5 +1,5 @@
 <?php
-namespace Think\core;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -7,10 +7,13 @@ namespace Think\core;
  */
 
 /**
- * Description of View
+ * Description of Redis
  *
  * @author mljm
  */
-class View {
+
+namespace Think\lib;
+
+class Redis {
     //put your code here
 }

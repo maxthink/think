@@ -31,13 +31,13 @@ Class appinit {
 
     function createDir():bool
     {
-        $ok1 = mkdir( APP_PATH );                  //应用 目录
-        $ok2 = mkdir( APP_PATH.'/'.APP_MODULE );   //应用->模块 目录
+        //$ok1 = mkdir( APP_PATH );                  //应用 目录
+        $ok2 = mkdir( APP_PATH.'/'.APP_MODULE ,0775, true);   //应用->模块 目录
         $ok3 = mkdir( CONFIG_PATH );               //应用->模块->配置文件,公共方法 目录
         $ok4 = mkdir( CONTROLLER_PATH );           //应用->模块->控制器 目录
         $ok5 = mkdir( MODEL_PATH );                //应用->模块->模型 目录
-        $ok6 = mkdir( VIEW_PATH );                 //应用->模块->视图 目录
-        if($ok1 && $ok2 && $ok3 && $ok4 && $ok5 && $ok6){
+        $ok6 = mkdir( VIEW_PATH.'default/Index/', 0775, true );                 //应用->模块->视图->默认主题->默认控制器 目录
+        if( $ok2 && $ok3 && $ok4 && $ok5 && $ok6){
             return true;
         }else
         {
@@ -55,26 +55,27 @@ Class appinit {
         copy(FRAME_PATH.'init/common/config.php', CONFIG_PATH.'config.php');
         copy(FRAME_PATH.'init/controller/index.php', CONTROLLER_PATH.'index.php');  //没解决配置命名空间问题
         copy(FRAME_PATH.'init/model/index.php', MODEL_PATH.'index.php');
-        copy(FRAME_PATH.'init/view/index.php', VIEW_PATH.'index.php');
+        copy(FRAME_PATH.'init/view/index.php', VIEW_PATH.'default/Index/index.php');
         
-        //控制器追加命名空间
-        $fp=fopen( CONTROLLER_PATH.'index.php' , 'r+');//
-        $str="<?php\nnamespace ".APP_NAME.'\\'.APP_MODULE.'\\controller;';
-        $str.=fread($fp,filesize( CONTROLLER_PATH.'index.php' ));
-        fseek($fp, 0);
-        fwrite($fp,$str);
-        fclose($fp);
-        unset($fp);
-        
-        //模型追加命名空间
-        $fp2=fopen( MODEL_PATH.'index.php' , 'r+');//
-        $str="<?php\nnamespace ".APP_NAME.'\\'.APP_MODULE.'\\model;';
-        $str.=fread($fp2,filesize( MODEL_PATH.'index.php' ));
-        fseek($fp2, 0);
-        fwrite($fp2,$str);
-        fclose($fp2);
-        unset($fp2);
-        
+        //控制器替换命名空间
+	if( 'app'!==APP_NAME && 'home'!==APP_MODULE ){
+	    $fp=fopen( CONTROLLER_PATH.'index.php' , 'r+');
+	    $str = fread($fp,filesize( CONTROLLER_PATH.'index.php' ));
+	    $str = str_replace('app',APP_NAME,$str);
+	    $str = str_replace('home',APP_MODULE,$str);
+	    fwrite($fp,$str);
+	    fclose($fp);
+	    unset($fp);
+	    
+	    //模型追加命名空间
+	    $fp2=fopen( MODEL_PATH.'index.php' , 'r+');//
+	    $str="<?php\nnamespace ".APP_NAME.'\\'.APP_MODULE.'\\model;';
+	    $str.=fread($fp2,filesize( MODEL_PATH.'index.php' ));
+	    fseek($fp2, 0);
+	    fwrite($fp2,$str);
+	    fclose($fp2);
+	    unset($fp2);
+	}
         
     }
 }

@@ -7,10 +7,13 @@
  */
 
 /**
- * Description of Redis
+ * Pdo方式连接数据库
  *
- * @author mljm
+ * @author maxthink
  */
-class Redis {
+
+namespace Think\lib;
+
+class Pdo {
     //put your code here
 }

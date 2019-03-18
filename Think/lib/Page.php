@@ -7,10 +7,13 @@
  */
 
 /**
- * Description of Cache
+ * Description of Page
  *
  * @author mljm
  */
-class Cache {
+
+namespace Think\lib;
+
+class Page {
     //put your code here
 }

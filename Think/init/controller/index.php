@@ -1,9 +1,20 @@
-
+<?php
 /**
 * Controller index 
 */
-class index{
-	public function index(){
-        echo '<h1>hello, I am Think iframe ! </h1>';
-	}
+
+namespace app\home\controller;
+
+use \Think\core;
+
+class Index extends \Think\core\Controller{
+	
+    public function index()
+    {
+	$M = new \Think\core\Model();
+	$users = $M->query('select * from user');
+	
+	$this->setData('users',$users);
+	$this->display();
+    }
 }
