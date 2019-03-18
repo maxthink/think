@@ -154,7 +154,7 @@ class Think{
     
     public static function _error($errCode, $errMsg, $errFile, $errLine)
     {
-        echo '<h1>出错:</h1>';
+        echo '<h4>出错:</h4>';
         echo '<br>文件: '.$errFile;
         echo '<br>行数: '.$errLine;
         echo '<br>错误信息: '.$errMsg;
@@ -164,7 +164,7 @@ class Think{
     
     public static function _exception($exception)
     {
-        echo '<h1>异常:</h1>';
+        echo '<h4>异常:</h4>';
         echo '<br>文件: '.$exception->getfile();
         echo '<br>行数: '.$exception->getLine();
         echo '<br>错误信息: '.$exception->getMessage();
