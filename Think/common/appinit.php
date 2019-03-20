@@ -7,7 +7,7 @@
  * 
  */
 
-Class appinit {
+class appinit {
     
     protected $errorMsg = '';
     

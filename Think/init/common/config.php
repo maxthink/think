@@ -12,12 +12,13 @@ return [
         'port'=>'3306', //mysql 端口
         'db_name'=>'test', //数据库
         'user'=>'root', //数据库用户名
-        'password'=>''  //密码
+        'password'=>'11111111'  //密码
     ],
     
     'Cache'=>   //缓存配置
     [
         'type'=>'file', //缓存类型 file,memcache,redis
+        'host'=>'127.0.0.1',
         'port'=>'6379', //缓存端口, file类型没有端口 memcache default 11211 , redis default 6379
         'user'=>'',
         'pass'=>''

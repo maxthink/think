@@ -3,10 +3,14 @@
  * 框架入口文件
  * betterThink, 更好的思考 -> 让编程者更好思考, 专注于项目开发, 不纠结框架逻辑
  * ( 更好的思考 -> 自己造一边轮子, 就知道造轮子的原理了, 看到别的轮子就知道怎么用了 *_* )
- * github:  https://github.com/maxthink/betterThink.git
+ * github:  https://github.com/maxthink/Think.git
+ * 
+ * 框架原理, 为了方便, 做好规则...
+ * 
+ * 第一步, 初始化: 定义一堆常量, 项目路径, 框架路径, 引入基础类
+ * 第二步, 路由分析, 加载cmv 
  */
 
-//namespace Think;
 
 class Think{
     
