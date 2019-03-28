@@ -28,14 +28,15 @@ class Controller {
     
     public function display($template='')
     {
+        
         if($template=='')
         {
-            $template= APP_PATH.APP_MODULE.'/view/'.C('Template/use').'/'.basename( get_called_class() ).'/index.'.C('Template/file_suffix');
+            $template= VIEW_PATH.C('Template/use').DIRECTORY_SEPARATOR.substr(get_called_class(), strrpos(get_called_class(),'\\')+1 ).DIRECTORY_SEPARATOR.'index.'.C('Template/file_suffix');
         }else
         {
             //$template= APP_PATH.C('Template/use').__CLASS__.'/index.'.C('Template/file_suffix');
-	    $template= APP_PATH.APP_MODULE.'/'.C('Template/use').get_called_class().'/'.__METHOD__.'/'.C('Template/file_suffix');
-	    $template= APP_PATH.APP_MODULE.'/view/'.C('Template/use').'/'.basename( get_called_class() ).'/'.__METHOD__.'./'.C('Template/file_suffix');
+    	    $template= VIEW_PATH.C('Template/use').get_called_class().DIRECTORY_SEPARATOR.__METHOD__.DIRECTORY_SEPARATOR.C('Template/file_suffix');
+    	    $template= VIEW_PATH.C('Template/use').DIRECTORY_SEPARATOR.basename( get_called_class() ).DIRECTORY_SEPARATOR.__METHOD__.'.'.DIRECTORY_SEPARATOR.C('Template/file_suffix');
         }
         require $template;
     }

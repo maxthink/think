@@ -28,10 +28,10 @@ class Think{
     private static function init()
     {
         //根路径常量
-        define('ROOT', getcwd().'/../' );   //
+        define('ROOT', getcwd().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR );   //
         
         //框架根目录
-        define('FRAME_PATH',__DIR__.'/');
+        define('FRAME_PATH',__DIR__.DIRECTORY_SEPARATOR);
         
         //项目名
         if(!defined('APP_NAME')){
@@ -40,34 +40,47 @@ class Think{
         
         //项目目录地址
         if(!defined('APP_PATH')){
-            define('APP_PATH',ROOT.APP_NAME.'/');           
+            define('APP_PATH',ROOT.APP_NAME.DIRECTORY_SEPARATOR);           
         }
         
         //项目模块( 这里可以处理成 根据uri自动匹配模块, ..... )
-        if(!defined('APP_MODULE'))
-        {
-            define('APP_MODULE', 'home');   //默认创建 home 模块(前端显示模块)
+        if(!defined('MODULE_NAME')) {
+            define('MODULE_NAME', 'home');   //默认创建 home 模块(前端显示模块)
         }
+
+        //模块地址
+        if(!defined('MODULE_PATH')){
+            define('MODULE_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR);           
+        }
+
         
         //项目配置文件
-        define('CONFIG_PATH',APP_PATH.'/'.APP_MODULE.'/common/');
-        define('CONTROLLER_PATH',APP_PATH.'/'.APP_MODULE.'/controller/');
-        define('MODEL_PATH',APP_PATH.'/'.APP_MODULE.'/model/');
-        define('VIEW_PATH',APP_PATH.'/'.APP_MODULE.'/view/');
+        define('CONFIG_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR.'common'.DIRECTORY_SEPARATOR);
+        define('CONTROLLER_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR.'controller'.DIRECTORY_SEPARATOR);
+        define('MODEL_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR.'model'.DIRECTORY_SEPARATOR);
+        define('VIEW_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR.'view'.DIRECTORY_SEPARATOR);
 
         //初始化项目目录和默认代码内容
         if(!is_dir(APP_PATH))
         {
-            require FRAME_PATH.'common/appinit.php';
+            require FRAME_PATH.'common'.DIRECTORY_SEPARATOR.'appinit.php';
+            $init = new appinit();
+            $init->init();
+        }
+
+        //初始化模块
+        if(!is_dir(MODULE_PATH))
+        {
+            require FRAME_PATH.'common'.DIRECTORY_SEPARATOR.'appinit.php';
             $init = new appinit();
             $init->init();
         }
         
         //引入框架基础类
-        require FRAME_PATH.'common/function.php';
-        require FRAME_PATH.'core/controller.php';
-        require FRAME_PATH.'core/model.php';
-        require FRAME_PATH.'core/view.php';
+        require FRAME_PATH.'common'.DIRECTORY_SEPARATOR.'function.php';
+        require FRAME_PATH.'core'.DIRECTORY_SEPARATOR.'Controller.php';
+        require FRAME_PATH.'core'.DIRECTORY_SEPARATOR.'Model.php';
+        require FRAME_PATH.'core'.DIRECTORY_SEPARATOR.'View.php';
         
         spl_autoload_register( 'Think::_autoload' );
         register_shutdown_function( 'Think::_shutdown' );
@@ -86,32 +99,40 @@ class Think{
         {
             throw new Exception('配置文件不存在');
         }
-        
 
-        $uri = isset($_SERVER['REQUEST_URI']) ?? $_SERVER['REQUEST_URI'];
+        $query =  $_SERVER['QUERY_STRING'] ?? '';
         $c = 'index';   //默认控制器
         $a = 'index';   //默认方法
         
-        if($uri=='/' || $uri=='/index.php')     // http://xxx.net/index.php http://xxx.net/  两种地址用默认的 index
+        if( '/'==$query || $_SERVER['DOCUMENT_URI']==$query )     // http://xxx.net/index.php http://xxx.net/  两种地址用默认的 index.php
         {
             $c = 'index';
             $a = 'index';
-        }
-        else
-        {
-            $paths = explode($uri, '/');
-            if(strpos('/index.php',$uri)===0)   // http://xxx.net/index.php?/index/index   这种地址
-            {
-                $c = $paths[1];
-                $a = $paths[2];
-            }else                               // http://xxx.net/index/index   这种地址
-            {
-                $c = $paths[0];
-                $a = $paths[1];
+        } else {
+            
+            $paths = explode('/', $query);
+
+            if( ''==$paths[0] ){
+                array_shift($paths);
             }
+
+            $c = $paths[0];
+            $a = $paths[1];
+
+            // if(strpos($_SERVER['DOCUMENT_URI'],$query)===0)   // http://xxx.net/index.php?/index/index   这种地址
+            // {
+            //     $c = $paths[1];
+            //     $a = $paths[2];
+            // }else                               // http://xxx.net/index/index   这种地址
+            // {
+            //     $c = $paths[0];
+            //     $a = $paths[1];
+            // }
         }
-        
-        $className = '\\'.APP_NAME.'\\'.APP_MODULE.'\\controller\\index';
+
+        //echo 'controller:'. $c . ' mether:'.$a;
+
+        $className = APP_NAME.'\\'.MODULE_NAME.'\\controller\\'.$c;
         $do = new $className();
         $do->$a();
     }
@@ -123,32 +144,38 @@ class Think{
      */
     public static function _autoload($class)
     {
-        $className = basename($class);
+        //echo $class.PHP_EOL;
+        //$className = basename($class,'\\');
+        $className = substr($class, strrpos($class,'\\')+1 );
+        //echo 'classname: '.$className;
 
-        if(  false !== strpos($class,'controller') )
-        {
-            if (file_exists( CONTROLLER_PATH.$className.'.php' )){
-                include CONTROLLER_PATH.$className.'.php';
+        //controller
+        if(  false !== strpos($class,'controller') ) {
+            $classPath = CONTROLLER_PATH.$className.'.php';
+            if (file_exists( $classPath )) {
+                include $classPath;
             } else {
-                throw new Exception(" Controller codefile not found :".CONTROLLER_PATH.$className.'.php' );
+                throw new Exception(" 控制器文件没找到: ".$classPath );
             }
             return;
         }
 
-        if(  false !== strpos($class,'model') )
-        {
-	    if (file_exists( MODEL_PATH.$className.'.php' )){
-                include MODEL_PATH.$className.'.php';
+        //model
+        if(  false !== strpos($class,'model') ) {
+            $modelPath = MODEL_PATH.$className.'.php';
+	       if ( file_exists( $modelPath )) {
+                include $modelPath;
             } else {
-                throw new Exception(" Model codefile not found :".CONTROLLER_PATH.$className.'.php' );
+                throw new Exception(" Model codefile not found : ".$modelPath );
             }
             return;
         }
         
-        if(file_exists(FRAME_PATH.'lib/'.$className.'.php'))
+        //lib 类库
+        if(file_exists(FRAME_PATH.'lib'.DIRECTORY_SEPARATOR.$className.'.php'))
         {
-            include FRAME_PATH.'lib/'.$className.'.php';
-	    return;
+            include FRAME_PATH.'lib'.DIRECTORY_SEPARATOR.$className.'.php';
+            return;
         }
         
         throw new Exception('自动加载没有检测到要加载的文件：'.$class);
@@ -157,13 +184,13 @@ class Think{
     public static function _shutdown()
     {
         //是不是可以在这里加 中间件的  后间件
-        //echo '<h1>脚本停止执行...:</h1>';
+        //echo '<h6>脚本停止执行...</h6>';
     }
     
     public static function _error($errCode, $errMsg, $errFile, $errLine)
     {
-        echo '<h4>出错:</h4>';
-        echo '<br>文件: '.$errFile;
+        echo '<h5>出错:</h5>';
+        echo '文件: '.$errFile;
         echo '<br>行数: '.$errLine;
         echo '<br>错误信息: '.$errMsg;
         echo '<br>错误级别'.$errCode;
@@ -172,8 +199,8 @@ class Think{
     
     public static function _exception($exception)
     {
-        echo '<h4>异常:</h4>';
-        echo '<br>文件: '.$exception->getfile();
+        echo '<h5>异常:</h5>';
+        echo '文件: '.$exception->getfile();
         echo '<br>行数: '.$exception->getLine();
         echo '<br>错误信息: '.$exception->getMessage();
     }

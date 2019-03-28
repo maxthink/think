@@ -17,7 +17,7 @@ $iframedir = __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Think'.DIRECT
 if ( file_exists($iframedir) ) {
     require $iframedir;
     define('APP_NAME','app');   //如果定义项目名称, 框架按照项目名称生成代码目录. 否则生成默认的 Application 目录
-    define('MODULE','home');  //使用哪个模块
+    define('MODULE_NAME','wap');  //使用哪个模块
     define('DEBUG', true );
     Think::run();
 
