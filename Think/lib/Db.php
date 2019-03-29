@@ -23,6 +23,7 @@ class Db {
 	
 	try {
 	    $this->link = \mysqli_connect($dbconfig['host'], $dbconfig['user'], $dbconfig['pass'], $dbconfig['db'], $dbconfig['port'] );
+	    mysqli_set_charset($this->link, C('Db/charset') );
 	    unset($dbconfig);
 	} catch (Exception $exc) {
 	    $this->errmsg = '数据库连接错误：'.\mysqli_connect_error();	    

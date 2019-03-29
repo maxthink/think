@@ -40,6 +40,11 @@ class Controller {
         }
         require $template;
     }
+
+    public function json( $data='', $status=0, $msg='' ){
+        header('content-type:application/json;charset=utf-8');
+        exit( json_encode(['status'=>$status, 'msg'=>$msg, 'data'=>$data]) );
+    }
     
 
 }

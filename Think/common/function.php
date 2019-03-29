@@ -44,6 +44,22 @@ function C($c='')
 }
 
 /**
+*
+*/
+function I($data, $val='string'){
+    
+    list($type, $name) = explode('.', $data);
+    if( 'get'==$type ){
+        return $_GET[$name] ?? false ;
+    } elseif( 'post'==$type ) {
+        return $_POST[$name] ?? false ;
+    } elseif( ''==$type ) {
+        return $_GET[$name] ?? ( $_POST[$name] ?? false ) ;
+    }
+
+}
+
+/**
  * 
  */
 function M()
