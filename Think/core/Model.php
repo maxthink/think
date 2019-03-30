@@ -13,37 +13,38 @@ class Model {
     protected $db;
 
     public function __construct() {
-	    $this->db = \Think\lib\Db::getInstance();  //can be to lazyload ? 。。。。 how to do ?
+        $this->db = \Think\lib\Db::getInstance();  //can be to lazyload ? 。。。。 how to do ?
     }
 
     public function query($sql = '') {
-		if (false !== $this->db->link) {
-		    $result = mysqli_query( $this->db->link, $sql );
-		    if(false !== $result) {
-		    	return  mysqli_fetch_all( $result, MYSQLI_ASSOC);
-		    } esle {
-		    	return false;
-		    }
-		    
-		} else {
-		    throw new \Exception($this->db->errmsg);
-		}
+        if (false !== $this->db->link) {
+
+            $result = $this->db->link->query( $sql );
+            
+            if (false !== $result) {
+                return $result->fetch_array(MYSQLI_ASSOC);
+            } else {
+                return false;
+            }
+        } else {
+            throw new \Exception($this->db->errmsg);
+        }
     }
 
     public function select() {
-	
+        
     }
 
     public function update() {
-	
+        
     }
 
     public function find() {
-	
+        
     }
 
-    public function prepare($sql){
-    	return $this->db->link->prepare($sql);
+    public function prepare($sql) {
+        return $this->db->link->prepare($sql);
     }
 
 }
