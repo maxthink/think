@@ -17,6 +17,7 @@ class Model {
     }
 
     public function query($sql = '') {
+        $this->db = \Think\lib\Db::getInstance();
         if (false !== $this->db->link) {
 
             $result = $this->db->link->query( $sql );
@@ -32,19 +33,24 @@ class Model {
     }
 
     public function select() {
-        
+        $this->db = \Think\lib\Db::getInstance();
     }
 
     public function update() {
-        
+        $this->db = \Think\lib\Db::getInstance();
     }
 
     public function find() {
-        
+        $this->db = \Think\lib\Db::getInstance();
     }
 
     public function prepare($sql) {
-        return $this->db->link->prepare($sql);
+        $strm = $this->db->link->prepare($sql);
+        if( false !== $strm ){
+            return $strm;
+        } else {
+            throw new Exception('prepare error: '.$this->db->link->error );
+        }
     }
 
 }

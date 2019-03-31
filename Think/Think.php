@@ -27,6 +27,9 @@ class Think{
      */
     private static function init()
     {
+        //定义一个时间， 老用
+        define('TIME',$_SERVER['REQUEST_TIME'] ?? time() );
+        
         //根路径常量
         define('ROOT', getcwd().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR );   //
         
@@ -101,13 +104,13 @@ class Think{
         }
 
         $query =  $_SERVER['QUERY_STRING'] ?? '';
-        $c = 'index';   //默认控制器
-        $a = 'index';   //默认方法
+        $ctrollerName = 'Index';   //默认控制器
+        $mether = 'index';   //默认方法
         
         if( '/'==$query || $_SERVER['DOCUMENT_URI']==$query )     // http://xxx.net/index.php http://xxx.net/  两种地址用默认的 index.php
         {
-            $c = 'index';
-            $a = 'index';
+            $ctrollerName = 'Index';
+            $mether = 'index';
         } else {
             
             $paths = explode('/', $query);
@@ -116,8 +119,8 @@ class Think{
                 array_shift($paths);
             }
 
-            $c = $paths[0];
-            $a = $paths[1];
+            $ctrollerName = $paths[0];
+            $mether = $paths[1];
 
             // if(strpos($_SERVER['DOCUMENT_URI'],$query)===0)   // http://xxx.net/index.php?/index/index   这种地址
             // {
@@ -132,9 +135,9 @@ class Think{
 
         //echo 'controller:'. $c . ' mether:'.$a;
 
-        $className = APP_NAME.'\\'.MODULE_NAME.'\\controller\\'.$c;
+        $className = APP_NAME.'\\'.MODULE_NAME.'\\controller\\'.ucfirst($ctrollerName);
         $do = new $className();
-        $do->$a();
+        $do->$mether();
     }
     
     
@@ -146,7 +149,7 @@ class Think{
     {
         //echo $class.PHP_EOL;
         //$className = basename($class,'\\');
-        $className = substr($class, strrpos($class,'\\')+1 );
+        $className = ucfirst(substr($class, strrpos($class,'\\')+1 ));
         //echo 'classname: '.$className;
 
         //controller
@@ -194,7 +197,7 @@ class Think{
         echo '<br>行数: '.$errLine;
         echo '<br>错误信息: '.$errMsg;
         echo '<br>错误级别'.$errCode;
-        
+        exit;
     }
     
     public static function _exception($exception)
@@ -203,6 +206,7 @@ class Think{
         echo '文件: '.$exception->getfile();
         echo '<br>行数: '.$exception->getLine();
         echo '<br>错误信息: '.$exception->getMessage();
+        exit;
     }
     
     
