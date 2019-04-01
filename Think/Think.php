@@ -45,34 +45,12 @@ class Think{
         if(!defined('APP_PATH')){
             define('APP_PATH',ROOT.APP_NAME.DIRECTORY_SEPARATOR);           
         }
-        
-        //项目模块( 这里可以处理成 根据uri自动匹配模块, ..... )
-        if(!defined('MODULE_NAME')) {
-            define('MODULE_NAME', 'home');   //默认创建 home 模块(前端显示模块)
-        }
 
-        //模块地址
-        if(!defined('MODULE_PATH')){
-            define('MODULE_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR);           
-        }
-
-        
-        //项目配置文件
-        define('CONFIG_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR.'common'.DIRECTORY_SEPARATOR);
-        define('CONTROLLER_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR.'controller'.DIRECTORY_SEPARATOR);
-        define('MODEL_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR.'model'.DIRECTORY_SEPARATOR);
-        define('VIEW_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR.'view'.DIRECTORY_SEPARATOR);
+        //配置文件
+        define('CONFIG_PATH', APP_PATH.DIRECTORY_SEPARATOR.'common/' );
 
         //初始化项目目录和默认代码内容
         if(!is_dir(APP_PATH))
-        {
-            require FRAME_PATH.'common'.DIRECTORY_SEPARATOR.'appinit.php';
-            $init = new appinit();
-            $init->init();
-        }
-
-        //初始化模块
-        if(!is_dir(MODULE_PATH))
         {
             require FRAME_PATH.'common'.DIRECTORY_SEPARATOR.'appinit.php';
             $init = new appinit();
@@ -96,17 +74,25 @@ class Think{
      */
     private static function dispath()
     {
+        //获取配置文件
         if(file_exists(CONFIG_PATH.'config.php')){
             self::$config = include CONFIG_PATH.'config.php';
         }else
         {
             throw new Exception('配置文件不存在');
         }
-
+        
+	//获取查询串， 解析路由
         $query =  $_SERVER['QUERY_STRING'] ?? '';
+	if(strpos('s=/',$query)==0){
+	    $query = substr($query, 3);
+	}
+        //给默认模块，控制器，方法
+	$module = self::$config['Project']['module_default'];
         $ctrollerName = 'Index';   //默认控制器
         $mether = 'index';   //默认方法
         
+        //解析路由
         if( '/'==$query || $_SERVER['DOCUMENT_URI']==$query )     // http://xxx.net/index.php http://xxx.net/  两种地址用默认的 index.php
         {
             $ctrollerName = 'Index';
@@ -114,26 +100,53 @@ class Think{
         } else {
             
             $paths = explode('/', $query);
-
+	    //print_r($paths);
             if( ''==$paths[0] ){
                 array_shift($paths);
             }
-
-            $ctrollerName = $paths[0];
-            $mether = $paths[1];
-
-            // if(strpos($_SERVER['DOCUMENT_URI'],$query)===0)   // http://xxx.net/index.php?/index/index   这种地址
-            // {
-            //     $c = $paths[1];
-            //     $a = $paths[2];
-            // }else                               // http://xxx.net/index/index   这种地址
-            // {
-            //     $c = $paths[0];
-            //     $a = $paths[1];
-            // }
+	    //从路径里找模块（路由解析最重要部分， 还需完善）
+	    $module = isset($paths[0]) && !empty($paths[0]) ? $paths[0] : '';
+            
+            //判断路径里找出的模块是否在配置文件里， 不在就获取配置的默认模块
+            if( in_array($module, self::$config['Project']['modules'])){
+                //获取的模块在配置里， 按顺序取出控制器，方法
+                $ctrollerName = isset($paths[1]) && !empty($paths[1]) ? $paths[1] : 'Index';
+                $mether = isset($paths[2]) && !empty($paths[2]) ? $paths[2] : 'index';
+            } else {
+                $module = self::$config['Project']['module_default'];
+                //获取的模块不在配置里， 默认
+                $ctrollerName = isset($paths[0]) && !empty($paths[0]) ? $paths[0] : 'Index';
+                $mether = isset($paths[1]) && !empty($paths[1]) ? $paths[1] : 'index';
+                
+            }
+        }
+        
+        //项目模块( 这里可以处理成 根据uri自动匹配模块, ..... )
+        if(!defined('MODULE_NAME')) {
+            define('MODULE_NAME', $module );   //默认创建 home 模块(前端显示模块)
         }
 
-        //echo 'controller:'. $c . ' mether:'.$a;
+        //模块地址
+        if(!defined('MODULE_PATH')){
+            define('MODULE_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR);           
+        }
+
+        //项目配置文件
+        define('MODULE_CONFIG_PATH',MODULE_PATH.'common'.DIRECTORY_SEPARATOR);
+        define('CONTROLLER_PATH',MODULE_PATH.'controller'.DIRECTORY_SEPARATOR);
+        define('MODEL_PATH',MODULE_PATH.'model'.DIRECTORY_SEPARATOR);
+        define('VIEW_PATH',MODULE_PATH.'view'.DIRECTORY_SEPARATOR);
+        
+                
+//        //初始化模块
+//        if(!is_dir(MODULE_PATH))
+//        {
+//            require FRAME_PATH.'common'.DIRECTORY_SEPARATOR.'appinit.php';
+//            $init = new appinit();
+//            $init->init();
+//        }
+        
+        //echo 'module: '.MODULE_NAME.' controller:'. $ctrollerName . ' mether:'.$mether;
 
         $className = APP_NAME.'\\'.MODULE_NAME.'\\controller\\'.ucfirst($ctrollerName);
         $do = new $className();
@@ -147,12 +160,11 @@ class Think{
      */
     public static function _autoload($class)
     {
-        //echo $class.PHP_EOL;
-        //$className = basename($class,'\\');
+        //echo PHP_EOL.$class.PHP_EOL;
         $className = ucfirst(substr($class, strrpos($class,'\\')+1 ));
         //echo 'classname: '.$className;
 
-        //controller
+        //controller  根据类里包含 controller 找控制器类
         if(  false !== strpos($class,'controller') ) {
             $classPath = CONTROLLER_PATH.$className.'.php';
             if (file_exists( $classPath )) {
@@ -163,13 +175,13 @@ class Think{
             return;
         }
 
-        //model
+        //model 根据类里包含 model 找模型类
         if(  false !== strpos($class,'model') ) {
             $modelPath = MODEL_PATH.$className.'.php';
 	       if ( file_exists( $modelPath )) {
                 include $modelPath;
             } else {
-                throw new Exception(" Model codefile not found : ".$modelPath );
+                throw new Exception(" 模型文件没找到: ".$modelPath );
             }
             return;
         }
