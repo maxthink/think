@@ -44,25 +44,26 @@ function C($c='')
 }
 
 /**
-*
-*/
-function I($data, $val='string'){
-    
-    list($type, $name) = explode('.', $data);
-    if( 'get'==$type ){
-        return $_GET[$name] ?? false ;
-    } elseif( 'post'==$type ) {
-        return $_POST[$name] ?? false ;
-    } elseif( ''==$type ) {
-        return $_GET[$name] ?? ( $_POST[$name] ?? false ) ;
-    }
-
-}
-
-/**
  * 
  */
 function M()
 {
     
+}
+
+/**
+ * 获取输入，
+ * @param type $name post,get 的name
+ * @param type $type 获取类型： string, int， 
+ */
+function I($value, $type='string', $filter='htmlspecialchars')
+{
+    list($type,$name) = explode('.',$value);
+    if(null==$type){
+	return $_GET[$name] ?? ( $_POST[$name] ?? '' ) ;
+    } elseif('get'==$type) {
+	return $_GET[$name] ?? '' ;
+    } elseif('post'==$type) {
+	return $_POST[$name] ?? '' ;
+    }
 }
