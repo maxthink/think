@@ -7,6 +7,9 @@ namespace app\api\controller;
 
 class User extends Inter {
 
+    /**
+     * 获取用户信息
+     */
     public function getInfo() {
 
 	//print_r($_SERVER);

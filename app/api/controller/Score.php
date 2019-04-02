@@ -9,23 +9,25 @@ class Score extends Inter {
 	
     public function addscore(){
 	
-        $score = $this->post['score'] ?? 0 ;
+        $score = $this->post['score'] ?? 0 ;	//积分
         $uid = $this->post['uid'] ?? false ;
-        $imei = $this->post['imei'] ?? '';
+        $imei = $this->post['imei'] ?? false;	
+	$platform = $this->post['plat'] ?? '';	//广告平台 id
 	
 	if( $score>0 ){
-                $Muser = new \app\api\model\User();
-		if($uid==false || $uid==0){
-                    $user = $Muser->getUserByImei($imei);
-                    if(false !== $user ){
-                        add_order($platform, 0, $uid, $score, '', $waring );
-                    }
-                }
-		
-
-		exit( json_encode(array('status'=>0,'msg'=>'恭喜你获得'.$score.'积分') ) );
+	    $Muser = new \app\api\model\User();
+	    if( $imei !== false ){
+		$uid = $Muser->getUserIdByImei($imei);
+		if( false === $user ){
+		    $uid =$Muser->addNewUser($imei);
+		}
+		ScoreModel::add_score($platform, 0, $uid, $score, '' );
+		$this->json('恭喜你获得'.$score.'积分');
+	    } else {
+		$this->json('',1,'params error');
+	    }
 	}else{
-		exit( json_encode(array('status'=>500,'msg'=>'') ) );
+	    $this->json('',1,'params error');
 	}
 
     }

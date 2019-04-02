@@ -69,7 +69,7 @@ class User extends \Think\core\Model {
         }
     }
 
-    //获取用户数据 by uid
+    //获取用户数据 by imei
     function getUserByImei($imei = '') {
         if ('' == $imei) {
             return false;
@@ -95,6 +95,32 @@ class User extends \Think\core\Model {
         }
     }
 
+    //根据用户imei获取用户id
+    function getUserIdByImei($imei = '') {
+        if ('' == $imei) {
+            return false;
+        } else {
+            $db = \Think\lib\Db::getInstance();
+            $sql = 'select uid from ' . $this->table . ' where imei=?';
+            $stmt = $db->link->stmt_init();
+            $stmt->prepare($sql);
+            if (false === $stmt) {
+                throw new \Exception('prepare error: ' . $this->db->link->error);
+            }
+            $stmt->bind_param('s', $imei);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $stmt->close();
+            if ($result->num_rows > 0) {
+                return $result->fetch_all(MYSQLI_ASSOC);
+            } elseif (-1 === $result->num_rows) {
+                throw new \Exception('query error: ' . $db->link->error);
+            } else {
+                return false;
+            }
+        }
+    }
+    
     //获取下一自增id
     private function getAutoIncreamentId() {
         $sql = 'SELECT auto_increment FROM information_schema.`TABLES` WHERE TABLE_SCHEMA=\'' . C('Db/db_name') . '\' AND TABLE_NAME=\'' . $this->table . '\'';

@@ -66,5 +66,13 @@ class Db {
         return mysqli::mysqli_insert_id($this->dbLink);
     }
     
+    public function insert($sql){
+	if( mysqli::query($this->link, $sql) ){
+	    return $this->lastId();
+	} else {
+	    return false;
+	}
+    }
+    
     
 }
