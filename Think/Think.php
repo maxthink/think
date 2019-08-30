@@ -78,7 +78,8 @@ class Think {
 
         //获取查询串， 解析路由
         $query = $_SERVER['QUERY_STRING'] ?? '';
-        if (strpos('s=/', $query) == 0) {
+
+        if (strpos($query, 's=/' ) == 0) {
             $query = substr($query, 3);
         }
         //给默认模块，控制器，方法
@@ -86,7 +87,7 @@ class Think {
         $ctrollerName = 'Index';   //默认控制器
         $mether = 'index';   //默认方法
         //解析路由， 获取 模块， 控制器， 方法
-        if ('/' == $query || $_SERVER['DOCUMENT_URI'] == $query) {     // http://xxx.net/index.php http://xxx.net/  两种地址用默认的 index.php
+        if ( '/' == $query || $_SERVER['DOCUMENT_URI'] == $query) {     // http://xxx.net/index.php http://xxx.net/  两种地址用默认的 index.php
             $ctrollerName = 'Index';
             $mether = 'index';
         } else {
