@@ -36,7 +36,11 @@ function C($c='')
         if(strpos($c,'/')!==false)  //框架获取配置数据, 就是两层
         {
             $_arr =  explode('/', $c);
-            return Think::$config[$_arr[0]][$_arr[1]];  //
+            if(isset(Think::$config[$_arr[0]][$_arr[1]])){
+                return Think::$config[$_arr[0]][$_arr[1]];  //
+            }else{
+                return false;
+            }
         } else {
             return false;
         }

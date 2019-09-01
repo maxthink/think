@@ -120,10 +120,10 @@ class Think {
  
         //项目配置文件
         define('METHOD', $mether);  //定义方法常量， 接口校验区分用
-        //define('MODULE_CONFIG_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR.'common'.DIRECTORY_SEPARATOR);
-        //define('CONTROLLER_PATH',MODULE_PATH.'controller'.DIRECTORY_SEPARATOR);
-        //define('MODEL_PATH',MODULE_PATH.'model'.DIRECTORY_SEPARATOR);
-        //define('VIEW_PATH',MODULE_PATH.'view'.DIRECTORY_SEPARATOR);
+        define('MODULE_CONFIG_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR.'common'.DIRECTORY_SEPARATOR);
+        define('CONTROLLER_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR.'controller'.DIRECTORY_SEPARATOR);
+        define('MODEL_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR.'model'.DIRECTORY_SEPARATOR);
+        define('VIEW_PATH',APP_PATH.MODULE_NAME.DIRECTORY_SEPARATOR.'view'.DIRECTORY_SEPARATOR);
         
         //加载项目配置文件（模块有单独的配置文件，合并配置，覆盖app默认配置文件）
         if (file_exists(APP_PATH . MODULE_NAME . DIRECTORY_SEPARATOR . 'common' . DIRECTORY_SEPARATOR . 'config.php')) {

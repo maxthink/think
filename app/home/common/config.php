@@ -10,9 +10,9 @@ return [
         'type'=>'mysql',    //数据库类型
         'host'=>'localhost',    //数据库主机地址
         'port'=>'3306', //mysql 端口
-        'db_name'=>'aizhuanbao', //数据库
-        'user'=>'aizhuanbao', //数据库用户名
-        'password'=>'auje86ynj'  //密码
+        'db_name'=>'aibao', //数据库
+        'user'=>'aibao', //数据库用户名
+        'password'=>'Guoqu123!@#'  //密码
     ],
     
     'Cache'=>   //缓存配置
