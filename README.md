@@ -1,12 +1,11 @@
 think
 =====
 
-our mind is thinking , is thinking
+造个轮子，简单PHP框架, 理解下框架概念
 
 
 项目说明文件: 
 
-azb  爱赚宝 项目
 
 /Think 框架路径
 
